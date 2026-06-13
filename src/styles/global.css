@@ -26,11 +26,15 @@ body {
 @property --rotX { syntax: "<angle>";  inherits: true; initial-value: 90deg; }
 @property --rotY { syntax: "<angle>";  inherits: true; initial-value: 0deg; }
 @property --rotZ { syntax: "<angle>";  inherits: true; initial-value: 90deg; }
-@property --zoom { syntax: "<number>"; inherits: true; initial-value: 0.78; }
+/* hero→header progress; 0 = hero, 1 = header. The viewport-adaptive zoom is
+   derived from this in #camera (kept out of keyframes so it reflows on resize). */
+@property --p { syntax: "<number>"; inherits: true; initial-value: 1; }
 @property --dist { syntax: "<length>"; inherits: true; initial-value: 40px; }
 @property --panX { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --panY { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --fov  { syntax: "<length>"; inherits: true; initial-value: 900px; }
+/* 1 = tents bent into a quarter-circle arc (hero); 0 = straight line (header) */
+@property --bend { syntax: "<number>"; inherits: true; initial-value: 0; }
 
 :root {
   --k: 4; /* supersample factor — KEEP IN SYNC with SS in scripts/generate.ts */
@@ -63,14 +67,15 @@ body {
     /* hero: a 3/4 view looking down onto the row, room at the bottom for the
        wordmark lying on the floor */
     height: 100vh;
-    --rotX: 50deg;
+    --rotX: 46deg;
     --rotY: 0deg;
     --rotZ: 90deg;
-    --zoom: 0.78;
-    --dist: 50px;
+    --p: 0; /* hero end of the adaptive zoom blend (see #camera) */
+    --dist: 20px;
     --panX: 0px;
-    --panY: -95px;
-    --fov: 720px;
+    --panY: -120px;
+    --fov: 620px;
+    --bend: 1;
   }
   to {
     /* header: side-on row, raised within the band so the caption fits below */
@@ -78,11 +83,12 @@ body {
     --rotX: 90deg;
     --rotY: 0deg;
     --rotZ: 90deg;
-    --zoom: 0.6;
+    --p: 1; /* header end of the adaptive zoom blend (see #camera) */
     --dist: 30px;
     --panX: 0px;
     --panY: -36px;
     --fov: 900px;
+    --bend: 0;
   }
 }
 
@@ -111,12 +117,15 @@ body {
    centres the text box on its anchor point. */
 @keyframes wordmark {
   from {
-    /* lying flat on the floor (rotateX 0), out in front of the tents */
-    transform: translate3d(480px, 0px, -120px) rotateZ(-90deg) rotateX(0deg) translate(-50%, -50%);
+    /* lying flat on the floor (rotateX 0), about halfway from the tents to the
+       arc centre (full centre would be ~1750); scaled up so it reads big in the
+       hero. scale() sits before the centring translate so it grows about its
+       own centre. It eases back to 1 as it stands up into the dock caption. */
+    transform: translate3d(880px, 0px, -120px) rotateZ(-90deg) rotateX(0deg) scale(1.9) translate(-50%, -50%);
   }
   to {
     /* standing upright below the tents, facing the camera (rotateX -90) */
-    transform: translate3d(0px, 0px, -300px) rotateZ(-90deg) rotateX(-90deg) translate(-50%, -50%);
+    transform: translate3d(0px, 0px, -300px) rotateZ(-90deg) rotateX(-90deg) scale(1) translate(-50%, -50%);
   }
 }
 
@@ -155,11 +164,23 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
+  /* Viewport-adaptive scene scale for the two end states. Defined HERE (a
+     static declaration), not inside the scroll @keyframes, so it re-resolves
+     live on window resize — Chromium caches vw/vh that appear *inside* an
+     animated @property's keyframes, but not those read from a static rule.
+     CSS can't divide two lengths into a <number>, so tan(atan2(a, b)) is the
+     a/b ratio. Hero fills ~82% width (747px-wide scene at scale 1 → /910) with
+     a height guard, floored for phones and capped for huge monitors; the dock
+     stays at the good 0.6 and only shrinks when the row (≈713px) won't fit. */
+  --fit-hero: clamp(0.3, min(tan(atan2(100vw, 910px)), tan(atan2(100vh, 390px))), 1.5);
+  --fit-dock: min(0.6, tan(atan2(100vw, 829px)));
   transform-style: preserve-3d;
   transform:
     translate(var(--panX), var(--panY))
     translateZ(var(--dist))
-    scale(var(--zoom))
+    /* zoom = lerp(hero, dock, --p); --p is the only animated part, so resizing
+       (which changes --fit-*) updates the scale without a reload */
+    scale(calc(var(--fit-hero) * (1 - var(--p)) + var(--fit-dock) * var(--p)))
     rotateX(var(--rotX))
     rotateY(var(--rotY))
     rotateZ(var(--rotZ))
