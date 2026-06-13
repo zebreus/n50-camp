@@ -38,6 +38,7 @@ body {
 
 :root {
   --k: 4; /* supersample factor — KEEP IN SYNC with SS in scripts/generate.ts */
+  --edge: 1.4; /* tent edge thickness (px before the ×k supersample) */
 }
 
 /* ---------------------------------------------------------------------------
@@ -200,7 +201,7 @@ body {
   transform-origin: 0 0 0;
   backface-visibility: visible;
   background: #fff;
-  border: calc(1.4px * var(--k)) solid #000; /* ×k because geometry is laid out SS× */
+  border: calc(var(--edge) * 1px * var(--k)) solid #000; /* ×k because geometry is laid out SS× */
 }
 /* the two slim bottom faces (the tent's feet) are fully black */
 .face--foot {
@@ -231,7 +232,7 @@ body {
 .cap polygon {
   fill: #fff;
   stroke: #000;
-  stroke-width: calc(1.4 * var(--k)); /* ×k because geometry is laid out SS× */
+  stroke-width: calc(var(--edge) * var(--k)); /* ×k because geometry is laid out SS× */
   stroke-linejoin: miter;
 }
 
