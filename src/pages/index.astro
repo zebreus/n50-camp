@@ -1,6 +1,15 @@
 ---
 import "../styles/global.css";
 import Tents from "../generated/Tents";
+
+const paragraphs = [
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus.",
+  "Nulla facilisi. Aenean nec eros. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam ultrices.",
+  "Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam nec ante sed lacus.",
+  "Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis. Nulla facilisi. Ut fringilla. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam.",
+  "Praesent id justo in neque elementum ultrices. Aenean pulvinar. Praesent eleifend, augue ut tincidunt commodo, est nisl porta erat, vitae pellentesque arcu metus eu mi. Nulla facilisi. Phasellus a est. Mauris sit amet ligula sit amet erat.",
+];
 ---
 
 <!doctype html>
@@ -11,93 +20,30 @@ import Tents from "../generated/Tents";
     <title>tents.stl — CSS 3D</title>
   </head>
   <body>
-    <!-- scene owns the perspective (FOV); camera is the orbit/dolly rig.
-         Every tent is the same <Tent> component; the four small ones share one
-         deduplicated prototype (prototypes.length is 2, instances.length is 5). -->
-    <div id="scene">
-      <div id="camera">
-        <Tents />
+    <!-- The 3D scene is a sticky stage: it fills the page as a hero, then a
+         scroll-driven animation (CSS only, no JS) flies the camera and collapses
+         the stage into a compact sticky header. -->
+    <header id="stage">
+      <div id="scene">
+        <div id="camera">
+          <Tents />
+          <!-- wordmark is a real object in the 3D scene: it lies on the floor in
+               front of the tents in the hero, then animates its 3D position and
+               rotation to stand up as a caption below them (CSS only). -->
+          <div id="wordmark" aria-hidden="true">N50CAMP</div>
+        </div>
       </div>
-    </div>
+      <p id="hint">scroll ↓</p>
+    </header>
 
-    <div id="panel">
-      <h1>camera</h1>
-      <div id="controls"></div>
-      <button id="reset">reset</button>
-    </div>
-
-    <script>
-      // The only runtime JS: copy slider values into CSS custom properties.
-      // No 3D math — every transform is baked into the static HTML at build time.
-      interface Knob {
-        key: string;
-        label: string;
-        unit: string;
-        min: number;
-        max: number;
-        step: number;
-      }
-
-      const KNOBS: Knob[] = [
-        { key: "fov", label: "FOV (perspective)", unit: "px", min: 300, max: 4000, step: 10 },
-        { key: "rotX", label: "rotate X", unit: "deg", min: -180, max: 180, step: 1 },
-        { key: "rotY", label: "rotate Y", unit: "deg", min: -180, max: 180, step: 1 },
-        { key: "rotZ", label: "rotate Z", unit: "deg", min: -180, max: 180, step: 1 },
-        { key: "panX", label: "pan X", unit: "px", min: -800, max: 800, step: 1 },
-        { key: "panY", label: "pan Y", unit: "px", min: -800, max: 800, step: 1 },
-        { key: "dist", label: "dolly Z", unit: "px", min: -2000, max: 1500, step: 5 },
-        { key: "zoom", label: "zoom", unit: "", min: 0.1, max: 4, step: 0.01 },
-      ];
-
-      const SAVE = "tent-camera";
-      const root = document.documentElement;
-      const css = getComputedStyle(root);
-      const controls = document.getElementById("controls");
-      const resetBtn = document.getElementById("reset");
-
-      if (controls && resetBtn) {
-        const saved: Record<string, number> = JSON.parse(localStorage.getItem(SAVE) ?? "{}");
-
-        for (const knob of KNOBS) {
-          const fallback = parseFloat(css.getPropertyValue(`--${knob.key}`));
-          const value = knob.key in saved ? saved[knob.key] : fallback;
-
-          const wrap = document.createElement("div");
-          wrap.className = "ctl";
-          const label = document.createElement("label");
-          const name = document.createElement("span");
-          name.textContent = knob.label;
-          const val = document.createElement("span");
-          val.className = "val";
-          label.append(name, val);
-
-          const input = document.createElement("input");
-          input.type = "range";
-          input.min = String(knob.min);
-          input.max = String(knob.max);
-          input.step = String(knob.step);
-          input.value = String(value);
-
-          const reflect = (): void => {
-            val.textContent = input.value + knob.unit;
-            root.style.setProperty(`--${knob.key}`, `${input.value}${knob.unit}`);
-          };
-          input.addEventListener("input", () => {
-            reflect();
-            saved[knob.key] = parseFloat(input.value);
-            localStorage.setItem(SAVE, JSON.stringify(saved));
-          });
-
-          wrap.append(label, input);
-          controls.appendChild(wrap);
-          reflect();
-        }
-
-        resetBtn.addEventListener("click", () => {
-          localStorage.removeItem(SAVE);
-          location.reload();
-        });
-      }
-    </script>
+    <main id="content">
+      <h1>tents.stl</h1>
+      <p class="lede">
+        A campsite of five tents, every face a <code>&lt;div&gt;</code> placed with CSS 3D
+        transforms — no WebGL. The header above is the same scene, flown into place by a
+        scroll-driven animation.
+      </p>
+      {paragraphs.map((text) => <p>{text}</p>)}
+    </main>
   </body>
 </html>

@@ -1,29 +1,149 @@
+/* vendored wordmark font (woff2 in src/fonts/; Vite resolves + hashes the URL) */
+@font-face {
+  font-family: "Gidole";
+  src: url("../fonts/Gidole-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 
-html, body {
-  margin: 0;
-  height: 100%;
+html {
   background: #000;
   color: #ddd;
-  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
-  overflow: hidden;
+  font: 16px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+body {
+  margin: 0;
 }
 
-/* Camera knobs live as CSS custom properties so the sliders only copy a number
-   into a variable — no JavaScript math anywhere. */
+/* ---------------------------------------------------------------------------
+   Camera state as animatable custom properties. Registering them with @property
+   lets a keyframe animation INTERPOLATE them — so a scroll timeline can fly the
+   camera. initial-value = the header (end) state, used as a no-JS fallback.
+   --------------------------------------------------------------------------- */
+@property --rotX { syntax: "<angle>";  inherits: true; initial-value: 90deg; }
+@property --rotY { syntax: "<angle>";  inherits: true; initial-value: 0deg; }
+@property --rotZ { syntax: "<angle>";  inherits: true; initial-value: 90deg; }
+@property --zoom { syntax: "<number>"; inherits: true; initial-value: 0.78; }
+@property --dist { syntax: "<length>"; inherits: true; initial-value: 40px; }
+@property --panX { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --panY { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --fov  { syntax: "<length>"; inherits: true; initial-value: 900px; }
+
 :root {
-  --fov: 900px;    /* perspective: smaller = wider/stronger perspective */
-  --rotX: 90deg;
-  --rotY: 0deg;
-  --rotZ: 90deg;
-  --panX: 0px;
-  --panY: 4px;
-  --dist: 150px;   /* dolly along the view axis */
-  --zoom: 1.5;
-  --k: 4;          /* supersample factor — KEEP IN SYNC with SS in scripts/generate.ts */
+  --k: 4; /* supersample factor — KEEP IN SYNC with SS in scripts/generate.ts */
 }
 
-/* The scene establishes the single shared vanishing point (FOV). */
+/* ---------------------------------------------------------------------------
+   The sticky stage: hero → header
+   --------------------------------------------------------------------------- */
+/* Fixed (out of flow) so collapsing its height can't change the document height
+   — which would feed back into the scroll position that drives the animation.
+   The hero space is reserved with padding-top on #content instead. */
+#stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* hero; the intro collapses this to a header band */
+  overflow: hidden;
+  background: #000;
+  z-index: 2;
+  animation: intro linear both;
+  animation-timeline: scroll(root block);
+  /* fly-in finishes as the first content line reaches just below the band:
+     100vh (hero) − 28vh (band) = 72vh of scroll */
+  animation-range: 0 72vh;
+}
+
+@keyframes intro {
+  from {
+    /* hero: a 3/4 view looking down onto the row, room at the bottom for the
+       wordmark lying on the floor */
+    height: 100vh;
+    --rotX: 50deg;
+    --rotY: 0deg;
+    --rotZ: 90deg;
+    --zoom: 0.78;
+    --dist: 50px;
+    --panX: 0px;
+    --panY: -95px;
+    --fov: 720px;
+  }
+  to {
+    /* header: side-on row, raised within the band so the caption fits below */
+    height: 28vh;
+    --rotX: 90deg;
+    --rotY: 0deg;
+    --rotZ: 90deg;
+    --zoom: 0.6;
+    --dist: 30px;
+    --panX: 0px;
+    --panY: -36px;
+    --fov: 900px;
+  }
+}
+
+/* wordmark: a real object in the 3D scene (a child of #camera, so it lives in
+   the same ×SS supersampled space as the tents and inherits the camera fly).
+   Its own transform animates from "lying on the floor in front" to "standing up
+   below the tents, facing forward". translateZ here is MODEL-UP (z), not depth. */
+#wordmark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  color: #fff;
+  font-family: "Gidole", sans-serif;
+  font-weight: 400;
+  font-size: 135px; /* ×SS space; the camera's scale3d(1/k) shrinks it */
+  letter-spacing: 0.5em;
+  transform-origin: 0 0;
+  backface-visibility: visible;
+  animation: wordmark linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 72vh;
+}
+/* rotateZ(90deg) makes the text read along the row (model y); rotateX tilts it
+   from flat-on-floor (0deg) to standing-upright (90deg); translate(-50%,-50%)
+   centres the text box on its anchor point. */
+@keyframes wordmark {
+  from {
+    /* lying flat on the floor (rotateX 0), out in front of the tents */
+    transform: translate3d(480px, 0px, -120px) rotateZ(-90deg) rotateX(0deg) translate(-50%, -50%);
+  }
+  to {
+    /* standing upright below the tents, facing the camera (rotateX -90) */
+    transform: translate3d(0px, 0px, -300px) rotateZ(-90deg) rotateX(-90deg) translate(-50%, -50%);
+  }
+}
+
+/* "scroll" hint, fades out as soon as you start */
+#hint {
+  position: absolute;
+  bottom: 5vh;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  color: #777;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  pointer-events: none;
+  animation: hint-fade linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0 12vh;
+}
+@keyframes hint-fade {
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+/* ---------------------------------------------------------------------------
+   The 3D scene (unchanged technique; camera now driven by the intro animation)
+   --------------------------------------------------------------------------- */
 #scene {
   position: absolute;
   inset: 0;
@@ -31,8 +151,6 @@ html, body {
   perspective-origin: 50% 50%;
 }
 
-/* The camera rig sits at screen centre; the model is centred on the origin, so
-   the rotations orbit the model's middle. preserve-3d keeps the tents in 3D. */
 #camera {
   position: absolute;
   left: 50%;
@@ -45,19 +163,15 @@ html, body {
     rotateX(var(--rotX))
     rotateY(var(--rotY))
     rotateZ(var(--rotZ))
-    /* undo the SS× supersample (innermost) — scale3d so DEPTH (z) shrinks too,
-       not just x/y as a 2D scale() would */
+    /* undo the SS× supersample (innermost) — scale3d so depth (z) shrinks too */
     scale3d(calc(1 / var(--k)), calc(1 / var(--k)), calc(1 / var(--k)));
 }
 
-/* Each tent wrapper must itself preserve-3d (it is not inherited). */
 .tent {
   position: absolute;
   transform-style: preserve-3d;
 }
 
-/* A rectangular side face: placed with translate3d(corner) rotateX(edge-angle),
-   pivoting at its own corner. */
 .face {
   position: absolute;
   left: 0;
@@ -67,14 +181,11 @@ html, body {
   background: #fff;
   border: calc(1.4px * var(--k)) solid #000; /* ×k because geometry is laid out SS× */
 }
-
 /* the two slim bottom faces (the tent's feet) are fully black */
 .face--foot {
   background: #000;
 }
 
-/* Both end caps share this parent, which carries the core rotateY(90deg) that
-   stands the caps up into the y-z plane. Its cap-group children sit in 3D. */
 .caps {
   position: absolute;
   left: 0;
@@ -83,9 +194,6 @@ html, body {
   transform-style: preserve-3d;
 }
 
-/* End cap = a single SVG chevron (white fill + black stroke), positioned in the
-   cap plane. One raster, so the fill/stroke edge stays crisp; 3D-transformed by
-   CSS so it follows the camera with no JS. */
 .cap {
   position: absolute;
   left: 0;
@@ -106,44 +214,54 @@ html, body {
   stroke-linejoin: miter;
 }
 
-/* ---- control panel ---- */
-#panel {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  width: 234px;
-  padding: 12px 14px;
-  background: rgba(20, 20, 22, 0.85);
-  border: 1px solid #333;
-  border-radius: 8px;
-  backdrop-filter: blur(4px);
-  z-index: 10;
+/* ---------------------------------------------------------------------------
+   Article — hidden under the hero at first, revealed paragraph-by-paragraph
+   --------------------------------------------------------------------------- */
+#content {
+  position: relative;
+  z-index: 1;
+  max-width: 70ch;
+  margin: 0 auto;
+  /* top padding reserves the hero screen; text begins just below the final band */
+  padding: 100vh 28px 40vh;
 }
-#panel h1 {
-  margin: 0 0 10px;
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #888;
+#content h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.6em;
+  color: #fff;
 }
-.ctl { margin-bottom: 9px; }
-.ctl label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 3px;
+#content code {
+  color: #6cf;
+}
+#content .lede {
   color: #aaa;
+  font-size: 1.05em;
 }
-.ctl label .val { color: #6cf; }
-.ctl input[type="range"] { width: 100%; accent-color: #6cf; }
-#reset {
-  margin-top: 4px;
-  width: 100%;
-  padding: 6px;
-  background: #222;
-  color: #ccc;
-  border: 1px solid #444;
-  border-radius: 5px;
-  cursor: pointer;
-  font: inherit;
+#content p {
+  margin: 0 0 1.6em;
+  /* each paragraph fades + lifts in as it scrolls into view */
+  animation: reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 8% cover 32%;
 }
-#reset:hover { background: #2c2c2c; }
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Graceful fallback: without scroll-driven animation support, just show the
+   header-state scene at full height and the article below it. */
+@supports not (animation-timeline: scroll()) {
+  #stage { height: 70svh; }
+  #hint { display: none; }
+  #content p { animation: none; }
+}
