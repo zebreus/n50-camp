@@ -188,6 +188,7 @@ body {
     scale3d(var(--ik), var(--ik), var(--ik));
 }
 
+.tent-position,
 .tent {
   position: absolute;
   transform-style: preserve-3d;
