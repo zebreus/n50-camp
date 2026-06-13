@@ -38,6 +38,7 @@ body {
 
 :root {
   --k: 4; /* supersample factor — KEEP IN SYNC with SS in scripts/generate.ts */
+  --ik: calc(1 / var(--k)); /* its inverse, for the camera's supersample undo */
   --edge: 1.4; /* tent edge thickness (px before the ×k supersample) */
 }
 
@@ -108,7 +109,6 @@ body {
   font-size: 135px; /* ×SS space; the camera's scale3d(1/k) shrinks it */
   letter-spacing: 0.5em;
   transform-origin: 0 0;
-  backface-visibility: visible;
   animation: wordmark linear both;
   animation-timeline: scroll(root block);
   animation-range: 0 72vh;
@@ -158,7 +158,6 @@ body {
   position: absolute;
   inset: 0;
   perspective: var(--fov);
-  perspective-origin: 50% 50%;
 }
 
 #camera {
@@ -186,7 +185,7 @@ body {
     rotateY(var(--rotY))
     rotateZ(var(--rotZ))
     /* undo the SS× supersample (innermost) — scale3d so depth (z) shrinks too */
-    scale3d(calc(1 / var(--k)), calc(1 / var(--k)), calc(1 / var(--k)));
+    scale3d(var(--ik), var(--ik), var(--ik));
 }
 
 .tent {
@@ -199,7 +198,6 @@ body {
   left: 0;
   top: 0;
   transform-origin: 0 0 0;
-  backface-visibility: visible;
   background: #fff;
   border: calc(var(--edge) * 1px * var(--k)) solid #000; /* ×k because geometry is laid out SS× */
 }
@@ -221,7 +219,6 @@ body {
   left: 0;
   top: 0;
   transform-origin: 0 0 0;
-  backface-visibility: visible;
 }
 .cap svg {
   display: block;

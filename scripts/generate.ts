@@ -59,9 +59,9 @@ function components(tris: Tri[]): number[][] {
   const find = (a: number): number => {
     let r = a;
     while (parent[r] !== r) {
-      const p = parent[r] as number;
-      parent[r] = parent[p] as number;
-      r = parent[r] as number;
+      const p = parent[r];
+      parent[r] = parent[p]; // path-halving
+      r = parent[r];
     }
     return r;
   };
@@ -79,8 +79,8 @@ function components(tris: Tri[]): number[][] {
     }
   });
   for (const list of v2t.values()) {
-    const first = list[0] as number;
-    for (let j = 1; j < list.length; j++) union(first, list[j] as number);
+    const first = list[0];
+    for (let j = 1; j < list.length; j++) union(first, list[j]);
   }
 
   const comps = new Map<number, number[]>();
@@ -130,8 +130,7 @@ interface TentGeom {
 function tentLines(tris: Tri[], idxs: number[], C: Vec3): TentGeom {
   const vmap = new Map<string, Vec3>();
   for (const i of idxs) {
-    const tri = tris[i];
-    if (tri) for (const v of tri.vs) vmap.set(key(v), v);
+    for (const v of tris[i].vs) vmap.set(key(v), v);
   }
   const verts = [...vmap.values()];
   const cx = verts.reduce((s, v) => s + v[0], 0) / verts.length;
@@ -141,8 +140,7 @@ function tentLines(tris: Tri[], idxs: number[], C: Vec3): TentGeom {
   const planes = new Map<string, Tri[]>();
   for (const i of idxs) {
     const tri = tris[i];
-    if (!tri) continue;
-    const k = planeKey(tri.n, tri.vs[0] as Vec3);
+    const k = planeKey(tri.n, tri.vs[0]);
     const list = planes.get(k);
     if (list) list.push(tri);
     else planes.set(k, [tri]);
@@ -167,7 +165,7 @@ function tentLines(tris: Tri[], idxs: number[], C: Vec3): TentGeom {
       const ends = [...new Map(pv.map((p): [string, Vec2] => [`${p[1]},${p[2]}`, [p[1], p[2]]])).values()].sort(
         (a, b) => a[0] - b[0] || a[1] - b[1]
       );
-      const [P, Q] = ends as [Vec2, Vec2];
+      const [P, Q] = ends;
       const dy = Q[0] - P[0];
       const dz = Q[1] - P[1];
       sides.push({
@@ -203,13 +201,13 @@ function tentLines(tris: Tri[], idxs: number[], C: Vec3): TentGeom {
     const maxY = Math.max(...ys);
     const minZ = Math.min(...zs);
     const maxZ = Math.max(...zs);
-    const xcap = (pv[0] as Vec3)[0];
+    const xcap = pv[0][0];
 
     // chevron vertices: two ridge points + four feet
     const byZ = [...pv].sort((a, b) => b[2] - a[2]);
-    const oRidge = byZ[0] as Vec3;
-    const iRidge = byZ[1] as Vec3;
-    const [OL, IL, IR, OR] = byZ.slice(2).sort((a, b) => a[1] - b[1]) as [Vec3, Vec3, Vec3, Vec3];
+    const oRidge = byZ[0];
+    const iRidge = byZ[1];
+    const [OL, IL, IR, OR] = byZ.slice(2).sort((a, b) => a[1] - b[1]);
     const cl = (p: Vec3): Vec2 => [(maxZ - p[2]) * SCALE, (p[1] - minY) * SCALE];
 
     // the concave 6-point chevron outline (boundary order)
