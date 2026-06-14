@@ -103,7 +103,7 @@ export function SideTent(): VNode {
 }
 
 export default function Tents(): VNode {
-  const SIDE_TENTS = 8;
+  const SIDE_TENTS = 2;
   return (
     <>
       <div

@@ -18,7 +18,7 @@ body {
   margin: 0;
   animation: intro linear both;
   animation-timeline: scroll(root block);
-  animation-range: 0 72vh;
+  animation-range: 0 72svh;
 }
 
 /* ---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ body {
 @property --panX { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --panY { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --fov  { syntax: "<length>"; inherits: true; initial-value: 900px; }
-@property --camera-top { syntax: "<length-percentage>"; inherits: true; initial-value: 10vh; }
+@property --camera-top { syntax: "<length-percentage>"; inherits: true; initial-value: 10svh; }
 /* 1 = tents bent into a quarter-circle arc (hero); 0 = straight line (header) */
 @property --bend { syntax: "<number>"; inherits: true; initial-value: 0; }
 
@@ -44,12 +44,12 @@ body {
   --k: 4; /* supersample factor — must match the ×k coordinate scale baked into src/components/Tents.tsx */
   --ik: calc(1 / var(--k)); /* its inverse, for the camera's supersample undo */
   --edge: 1.4; /* tent edge thickness (px before the ×k supersample) */
-  --hero-camera-top: 50vh;
+  --hero-camera-top: 50svh;
 }
 
 @media (min-aspect-ratio: 3 / 2) {
   :root {
-    --hero-camera-top: 30vh;
+    --hero-camera-top: 30svh;
   }
 }
 
@@ -70,7 +70,7 @@ body {
   }
   to {
     /* header: side-on row, raised within the band so the caption fits below */
-    --camera-top: 10vh;
+    --camera-top: 10svh;
     --rotX: 90deg;
     --rotY: 0deg;
     --rotZ: 90deg;
@@ -98,9 +98,24 @@ body {
   font-size: 135px; /* ×SS space; the camera's scale3d(1/k) shrinks it */
   letter-spacing: 0.5em;
   transform-origin: 0 0;
-  animation: wordmark linear both;
-  animation-timeline: scroll(root block);
-  animation-range: 0 72vh;
+  backface-visibility: hidden;
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(880px * (1 - var(--p))),
+      0px,
+      calc(-120px - 180px * var(--p))
+    )
+    rotateZ(-90deg)
+    rotateX(calc(-90deg * var(--p)))
+    scale(calc(1.9 - 0.9 * var(--p)))
+    translate(-50%, -50%);
+}
+
+#wordmark > span {
+  display: block;
+  transform: translateZ(1px);
+  backface-visibility: hidden;
 }
 
 .wordmark-links {
@@ -113,6 +128,9 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
   letter-spacing: 0.08em;
+  transform: translateZ(1px);
+  transform-style: flat;
+  backface-visibility: hidden;
 }
 
 .wordmark-links li {
@@ -121,10 +139,14 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  translate:
-    calc(-50% + var(--row-x) * var(--p))
-    calc(var(--stack-y) * (1 - var(--p)));
-  scale: calc(0.92 + 0.08 * var(--p));
+  transform:
+    translate3d(
+      calc(-50% + var(--row-x) * var(--p)),
+      calc(var(--stack-y) * (1 - var(--p))),
+      1px
+    )
+    scale(calc(0.92 + 0.08 * var(--p)));
+  backface-visibility: hidden;
 }
 
 .wordmark-links li:nth-child(1) {
@@ -149,30 +171,13 @@ body {
 .wordmark-links a {
   color: #aaa;
   text-decoration: none;
+  backface-visibility: hidden;
 }
 
 .wordmark-links a:hover,
 .wordmark-links a:focus-visible {
   color: #fff;
   text-decoration: underline;
-}
-
-/* rotateZ(90deg) makes the text read along the row (model y); rotateX tilts it
-   from flat-on-floor (0deg) to standing-upright (90deg); translate(-50%,-50%)
-   centres the text box on its anchor point. */
-@keyframes wordmark {
-  from {
-    /* lying flat on the floor (rotateX 0), about halfway from the tents to the
-       arc centre (full centre would be ~1750); scaled up so it reads big in the
-       hero. scale() sits before the centring translate so it grows about its
-       own centre. It eases back to 1 as it stands up into the dock caption. */
-    transform: translate3d(880px, 0px, -120px) rotateZ(-90deg) rotateX(0deg) scale(1.9) translate(-50%, -50%);
-  }
-
-  to {
-    /* standing upright below the tents, facing the camera (rotateX -90) */
-    transform: translate3d(0px, 0px, -300px) rotateZ(-90deg) rotateX(-90deg) scale(1) translate(-50%, -50%);
-  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -185,15 +190,16 @@ body {
   z-index: 3;
   /* Viewport-adaptive scene scale for the two end states. Defined HERE (a
      static declaration), not inside the scroll @keyframes, so it re-resolves
-     live on window resize — Chromium caches vw/vh that appear *inside* an
+      live on window resize — Chromium caches vw/svh that appear *inside* an
      animated @property's keyframes, but not those read from a static rule.
      CSS can't divide two lengths into a <number>, so tan(atan2(a, b)) is the
      a/b ratio. Hero fills ~82% width (747px-wide scene at scale 1 → /910) with
      a height guard, floored for phones and capped for huge monitors; the dock
      stays at the good 0.6 and only shrinks when the row (≈713px) won't fit. */
-  --fit-hero: clamp(0.3, min(tan(atan2(100vw, 910px)), tan(atan2(100vh, 390px))), 1.5);
+  --fit-hero: clamp(0.3, min(tan(atan2(100vw, 910px)), tan(atan2(100svh, 390px))), 1.5);
   --fit-dock: min(0.6, tan(atan2(100vw, 829px)));
   transform-style: preserve-3d;
+  will-change: transform, top;
   transform:
     perspective(var(--fov))
     translate(var(--panX), var(--panY))
@@ -214,13 +220,13 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 22vh;
+  height: 22svh;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     #000 0,
-    #000 16vh,
-    transparent 22vh
+    #000 16svh,
+    transparent 22svh
   );
 }
 
@@ -249,7 +255,7 @@ body {
 .hero-only .cap polygon {
   animation: hero-only-color linear both;
   animation-timeline: scroll(root block);
-  animation-range: 0 72vh;
+  animation-range: 0 72svh;
 }
 
 @keyframes hero-only-color {
@@ -322,7 +328,7 @@ body {
   max-width: 70ch;
   margin: 0 auto;
   /* top padding reserves the hero screen; text begins just below the final band */
-  padding: 100vh 28px 40vh;
+  padding: 100svh 28px 40svh;
 }
 #content h1 {
   font-size: clamp(2rem, 6vw, 3.5rem);

@@ -6,9 +6,23 @@ import Tents from "../components/Tents";
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tents.stl — CSS 3D</title>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>tents.stl — CSS 3D</title>
+      <script is:inline>
+        (() => {
+          const isFirefox = /Firefox\/\d+|FxiOS\//.test(navigator.userAgent);
+          const hasNativeScrollTimeline = globalThis.CSS?.supports?.("animation-timeline", "scroll()") === true;
+          if (!isFirefox || hasNativeScrollTimeline) {
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.src = "/n50-scroll-polyfill.js";
+          script.defer = true;
+          document.head.append(script);
+        })();
+      </script>
   </head>
   <body>
     <header id="camera">
@@ -22,7 +36,7 @@ import Tents from "../components/Tents";
           <li><a href="https://wiki.n50.camp">Wiki</a></li>
           <li><a href="https://pretalx.n50.camp">Fahrplan</a></li>
           <li><a href="https://engel.n50.camp">Engeln</a></li>
-          <li><a href="https://engel.n50.camp">Tickets</a></li>
+          <li><a href="https://tickets.n50.camp">Tickets</a></li>
         </ul>
       </div>
     </header>
@@ -30,27 +44,24 @@ import Tents from "../components/Tents";
 
     <main id="content">
       <p class="lede">
-        n50.camp ist ein gemeinnütziges Outdoor-Hacker-Camp, das vom 10. bis 12.
-        Juli 2026 auf dem Pfadfinderplatz Greifenhorst (etwa 10km westlich von
-        Mainz) stattfindet. n50.camp ist die erste camping Veranstaltung von
-        n50.lat. Alle Informationen zur Veranstaltung, einschließlich Standort,
-        Mitwirkung als Freiwillige(r), Organisation und Team-Details, sind im
-        WHY2025-Wiki zu finden.
+        n50.camp ist ein Outdoor-Hacker-Camp, das vom 10. bis 12. Juli 2026 auf
+        dem Pfadfinderplatz Greifenhorst (etwa 10 km westlich von Mainz)
+        stattfindet. n50.camp ist die erste Camping-Veranstaltung von n50.lat.
       </p>
       <p>GO TOUCH GRASS</p>
       <p>
-        <time datetime="2026-07-10T15:00:00+02:00">July 10, 2026, 15:00</time>
+        <time datetime="2026-07-10T15:00:00+02:00">10. Juli 2026, 15:00 Uhr</time>
         <br />
-        until <br />
-        <time datetime="2026-07-12T18:00:00+02:00">July 12, 2026, 18:00</time>
+        bis <br />
+        <time datetime="2026-07-12T18:00:00+02:00">12. Juli 2026, 18:00 Uhr</time>
         <br />
-        <a href="/n50-camp-2026.ics" download>Add to calendar</a>
+        <a href="/n50-camp-2026.ics" download>Zum Kalender hinzufügen</a>
       </p>
       <address>
         Pfadfinderplatz Greifenhorst<br />
         St. Georgsweg 1<br />
         55271 Stadecken-Elsheim<br />
-        Germany
+        Deutschland
       </address>
       <ul>
         <li>
