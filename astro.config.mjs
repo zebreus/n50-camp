@@ -6,4 +6,11 @@ import preact from "@astrojs/preact";
 // zero JavaScript — the camera fly-in and reveals are pure CSS.
 export default defineConfig({
   integrations: [preact()],
+  vite: {
+    build: {
+      // inline the subset wordmark font (~10KB) as a base64 data URL so it
+      // ships inside the CSS — one fewer request and no late font swap
+      assetsInlineLimit: 16384,
+    },
+  },
 });
