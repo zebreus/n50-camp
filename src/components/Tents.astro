@@ -1,11 +1,10 @@
 ---
 // The five tents — every face and chevron cap as a CSS-3D-transformed element.
 // This file is the source of truth: originally derived from tents.stl, now
-// maintained by hand. Each wrapper's --bend term flies its tent between the
-// hero arc and the header line; the camera/scene rig lives in header.css.
+// maintained by hand. Each tent's --bend term flies it between the hero arc and
+// the header line; the camera/scene rig lives in header.css.
 import CenterTent from "./CenterTent.astro";
 import SideTent from "./SideTent.astro";
-import TentPosition from "./TentPosition.astro";
 
 const SIDE_TENTS = 2;
 // side tents share a baked STL lateral correction (rowX) and depth (rowZ)
@@ -13,32 +12,26 @@ const SIDE_ROW_X = -12.74;
 const SIDE_ROW_Z = -47;
 ---
 
-<TentPosition rowY={0} angle={0} rowZ={-45}>
-  <CenterTent />
-</TentPosition>
+<CenterTent rowY={0} angle={0} rowZ={-45} />
 {
   [...Array(SIDE_TENTS)].map((_, i) => (
-    <TentPosition
+    <SideTent
       rowX={SIDE_ROW_X}
       rowY={-700 * (i + 1)}
       rowZ={SIDE_ROW_Z}
       angle={22.5 * (i + 1)}
       heroOnly={i >= 2}
-    >
-      <SideTent />
-    </TentPosition>
+    />
   ))
 }
 {
   [...Array(SIDE_TENTS)].map((_, i) => (
-    <TentPosition
+    <SideTent
       rowX={SIDE_ROW_X}
       rowY={700 * (i + 1)}
       rowZ={SIDE_ROW_Z}
       angle={-22.5 * (i + 1)}
       heroOnly={i >= 2}
-    >
-      <SideTent />
-    </TentPosition>
+    />
   ))
 }

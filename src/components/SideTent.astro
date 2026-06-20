@@ -1,4 +1,11 @@
-<div class="tent">
+---
+import type { TentPlacement } from "./tent";
+import { tentStyle } from "./tent";
+type Props = TentPlacement;
+const props = Astro.props;
+---
+
+<div class:list={["tent", { "hero-only": props.heroOnly }]} style={tentStyle(props)}>
   <div
     class="face"
     style="width:503.28px;height:301.48px;transform:translate3d(-251.69px,-213.22px,-74.10px) rotateX(45.08deg)"

@@ -194,8 +194,9 @@ header {
   );
 }
 
-/* --row-x/--row-y/--row-z and --angle are set per tent by TentPosition.astro */
-.tent-position {
+/* --row-x/--row-y/--row-z and --angle are set per tent by the tent components;
+   --bend (on body) flies each tent between the hero arc and the header line */
+.tent {
   --arc-radius: 1750px;
   position: absolute;
   transform-style: preserve-3d;
@@ -230,11 +231,6 @@ header {
     background-color: #000;
     fill: #000;
   }
-}
-
-.tent {
-  position: absolute;
-  transform-style: preserve-3d;
 }
 
 /* faces, the cap container, and each cap fill their parent from the origin */
