@@ -71,6 +71,16 @@ body {
    the same ×SS supersampled space as the tents and inherits the camera fly).
    Its own transform animates from "lying on the floor in front" to "standing up
    below the tents, facing forward". translateZ here is MODEL-UP (z), not depth. */
+
+/* every wordmark layer is single-sided, so its back face never shows */
+#wordmark,
+#wordmark > span,
+.wordmark-links,
+.wordmark-links li,
+.wordmark-links a {
+  backface-visibility: hidden;
+}
+
 #wordmark {
   position: absolute;
   left: 0;
@@ -82,7 +92,6 @@ body {
   font-size: 135px; /* ×SS space; the camera's scale3d(1/k) shrinks it */
   letter-spacing: 0.5em;
   transform-origin: 0 0;
-  backface-visibility: hidden;
   will-change: transform;
   transform:
     translate3d(
@@ -99,7 +108,6 @@ body {
 #wordmark > span {
   display: block;
   transform: translateZ(1px);
-  backface-visibility: hidden;
 }
 
 .wordmark-links {
@@ -114,48 +122,27 @@ body {
   letter-spacing: 0.08em;
   transform: translateZ(1px);
   transform-style: flat;
-  backface-visibility: hidden;
 }
 
+/* each link is placed from its 0-based index --i: stacked one line apart in the
+   hero (p=0), spread evenly across a row from -10em to +10em in the header (p=1) */
 .wordmark-links li {
-  --stack-y: 0em;
-  --row-x: 0em;
+  --i: 0;
   position: absolute;
   left: 0;
   top: 0;
   transform:
     translate3d(
-      calc(-50% + var(--row-x) * var(--p)),
-      calc(var(--stack-y) * (1 - var(--p))),
+      calc(-50% + (-10em + var(--i) * 20em / 3) * var(--p)),
+      calc(var(--i) * 1em * (1 - var(--p))),
       1px
     )
     scale(calc(0.92 + 0.08 * var(--p)));
-  backface-visibility: hidden;
 }
 
-.wordmark-links li:nth-child(1) {
-  --row-x: -10em;
-}
-
-.wordmark-links li:nth-child(2) {
-  --stack-y: 1em;
-  --row-x: -3.333em;
-}
-
-.wordmark-links li:nth-child(3) {
-  --stack-y: 2em;
-  --row-x: 3.333em;
-}
-
-.wordmark-links li:nth-child(4) {
-  --stack-y: 3em;
-  --row-x: 10em;
-}
-
-/* colors come from the global `a` rule; only the 3D flatten is link-specific */
-.wordmark-links a {
-  backface-visibility: hidden;
-}
+.wordmark-links li:nth-child(2) { --i: 1; }
+.wordmark-links li:nth-child(3) { --i: 2; }
+.wordmark-links li:nth-child(4) { --i: 3; }
 
 /* ---------------------------------------------------------------------------
    The 3D scene (unchanged technique; camera now driven by the intro animation)
@@ -256,11 +243,21 @@ body {
   transform-style: preserve-3d;
 }
 
-.face {
+/* faces, the cap container, and each cap fill their parent from the origin */
+.face,
+.caps,
+.cap {
   position: absolute;
   left: 0;
   top: 0;
   transform-origin: 0 0 0;
+}
+
+.caps {
+  transform-style: preserve-3d;
+}
+
+.face {
   background: #fff;
   border: calc(var(--edge) * 1px * var(--k)) solid #000; /* ×k because geometry is laid out SS× */
 }
@@ -269,20 +266,6 @@ body {
   background: #000;
 }
 
-.caps {
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform-origin: 0 0 0;
-  transform-style: preserve-3d;
-}
-
-.cap {
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform-origin: 0 0 0;
-}
 .cap svg {
   display: block;
   width: 100%;
