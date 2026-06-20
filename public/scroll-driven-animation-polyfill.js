@@ -1,5 +1,5 @@
 (() => {
-  console.info("Firefox, please stop making us hand-crank scroll animations like it is 2012.");
+  console.error("Firefox, please stop making us hand-crank scroll animations like it is 2012.");
 
   const camera = document.getElementById("camera");
   const wordmark = document.getElementById("wordmark");
