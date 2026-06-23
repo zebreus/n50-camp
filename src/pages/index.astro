@@ -8,6 +8,11 @@ import Tents from "../components/Tents.astro";
 // Fahrplan. Rendered per request (SSR), so this flips on its own at the cutoff.
 const fahrplanCutoff = new Date("2026-07-03T02:00:00+02:00");
 const showCfp = new Date() < fahrplanCutoff;
+
+// Exclude polyfill on verified chromium browsers (Chrome, Edge, Opera, Brave, Vivaldi, etc.) that support the scroll-driven-animation spec
+const ua = Astro.request.headers.get("user-agent") ?? "";
+const chromiumMajor = Number(ua.match(/Chrome\/(\d+)/)?.[1] ?? 0);
+const needsScrollPolyfillLoader = !(chromiumMajor > 145);
 ---
 
 <!doctype html>
@@ -16,22 +21,26 @@ const showCfp = new Date() < fahrplanCutoff;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>n50.camp</title>
-    <script is:inline>
-      (() => {
-        // load the scroll-driven-animation polyfill only where the browser
-        // lacks native support (currently Firefox)
-        const hasNativeScrollTimeline =
-          globalThis.CSS?.supports?.("animation-timeline", "scroll()") === true;
-        if (hasNativeScrollTimeline) {
-          return;
-        }
+    {
+      needsScrollPolyfillLoader && (
+        <script is:inline>
+          (() => {
+            // load the scroll-driven-animation polyfill only where the browser
+            // lacks native support (currently Firefox)
+            const hasNativeScrollTimeline =
+              globalThis.CSS?.supports?.("animation-timeline", "scroll()") === true;
+            if (hasNativeScrollTimeline) {
+              return;
+            }
 
-        const script = document.createElement("script");
-        script.src = "/scroll-driven-animation-polyfill.js";
-        script.defer = true;
-        document.head.append(script);
-      })();
-    </script>
+            const script = document.createElement("script");
+            script.src = "/scroll-driven-animation-polyfill.js";
+            script.defer = true;
+            document.head.append(script);
+          })();
+        </script>
+      )
+    }
   </head>
   <body>
     <header>
