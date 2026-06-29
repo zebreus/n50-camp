@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N50CAMP</title>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <a href="/">&lt; Home</a>
+      <h2>Packliste</h2>
+      <p>
+        Für das Camp braucht ihr folgendes:
+      </p>
+      <h3>Für die Teilnahme erforderlich</h3>
+      <ul>
+        <li>Zelt</li>
+        <li>Isomatte</li>
+        <li>Schlafsack</li>
+        <li>Geschirr (Teller, Messer, Gabel, Löffel, Trinkgefäß)</li>
+        <li>Geschirrhandtuch</li>
+        <li>Sonnencreme</li>
+        <li>(Dusch-)Handtuch</li>
+        <li>Duschgel</li>
+      </ul>
+      <h3>Good to have</h3>
+      <ul>
+        <li>15m Strom-Verlängerungskabel (power to the tent)</li>
+        <li>Taschenlampe</li>
+      </ul>
+      <h3>Optional</h3>
+      <ul>
+        <li>15m RJ45 LAN-Kabel (lan to the tent)</li>
+      </ul>
+      <h3>Das übliche Chaos</h3>
+      <ul>
+        <li>Zahnbürste/ Zahnpasta</li>
+        <li>Bürste</li>
+        <li>Deo</li>
+        <li>Klamotten (auch warm für abends)</li>
+        <li>Kopfbedeckung (Hut, Käppi)</li>
+      </ul>
+    </main>
+    <Footer />
+  </body>
+</html>
