@@ -1,0 +1,46 @@
+---
+import "../styles/global.css";
+import "../styles/header.css";
+import Tents from "../components/Tents.astro";
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N50CAMP</title>
+    <slot name="head" />
+  </head>
+  <body>
+    <header>
+      <Tents />
+      <div id="wordmark">
+        <h1>N50CAMP</h1>
+        <nav>
+          <ul>
+            <!-- The wiki is intentionally disabled for now (still empty). The CfP
+                 runs over camp@n50.lat rather than a hosted form, so it's a mailto. -->
+            <li><a href="mailto:camp@n50.lat">CfP</a></li>
+            <li><a href="/lageplan">Lageplan</a></li>
+            <li><a href="/merch">Merch</a></li>
+            <li><a href="https://engel.n50.camp">Engeln</a></li>
+            <li><a href="https://tickets.n50.camp">Tickets</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <div id="header-backdrop" aria-hidden="true"></div>
+
+    <slot />
+
+    <footer>
+      <nav aria-label="Weitere Seiten">
+        <a href="/codeofconduct">Code of Conduct</a>
+        <a href="https://n50.lat/privacypolicy.html">Datenschutzerklärung</a>
+        <a href="https://n50.lat/imprint.html">Impressum</a>
+        <a href="https://github.com/zebreus/n50-camp">Seite bearbeiten</a>
+      </nav>
+    </footer>
+  </body>
+</html>

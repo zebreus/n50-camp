@@ -1,45 +1,33 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Base from "../layouts/Base.astro";
 ---
 
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>N50CAMP</title>
-  </head>
-  <body>
-    <Header />
-    <main>
-      <a href="/">&lt; Home</a>
-      <h2>Packliste</h2>
-      <p>Für das Camp braucht ihr Folgendes:</p>
-      <h3>Für die Teilnahme erforderlich</h3>
-      <ul>
-        <li>Zelt</li>
-        <li>Isomatte</li>
-        <li>Schlafsack</li>
-        <li>Geschirr (Teller, Messer, Gabel, Löffel, Trinkgefäß)</li>
-        <li>Geschirrhandtuch</li>
-      </ul>
-      <h3>Sonst wichtig</h3>
-      <ul>
-        <li>(Dusch-)Handtuch</li>
-        <li>Duschgel</li>
-        <li>Kopfbedeckung (Hut, Käppi)</li>
-        <li>Klamotten (auch warm für abends)</li>
-        <li>Sonnencreme</li>
-        <li>Zahnbürste/Zahnpasta</li>
-        <li>Bürste</li>
-        <li>Deo</li>
-        <li>Taschenlampe</li>
-        <li>(optional) 15 m Strom-Verlängerungskabel (power to the tent)</li>
-        <li>(optional) 15 m RJ45 LAN-Kabel (lan to the tent)</li>
-      </ul>
-    </main>
-    <Footer />
-  </body>
-</html>
+<Base>
+  <main>
+    <a href="/">&lt; Home</a>
+    <h2>Packliste</h2>
+    <p>Für das Camp braucht ihr Folgendes:</p>
+    <h3>Für die Teilnahme erforderlich</h3>
+    <ul>
+      <li>Zelt</li>
+      <li>Isomatte</li>
+      <li>Schlafsack</li>
+      <li>Geschirr (Teller, Messer, Gabel, Löffel, Trinkgefäß)</li>
+      <li>Geschirrhandtuch</li>
+    </ul>
+    <h3>Sonst wichtig</h3>
+    <ul>
+      <li>(Dusch-)Handtuch</li>
+      <li>Duschgel</li>
+      <li>Kopfbedeckung (Hut, Käppi)</li>
+      <li>Klamotten (auch warm für abends)</li>
+      <li>Sonnencreme</li>
+      <li>Zahnbürste/Zahnpasta</li>
+      <li>Bürste</li>
+      <li>Deo</li>
+      <li>Taschenlampe</li>
+      <li>(optional) 15 m Strom-Verlängerungskabel (power to the tent)</li>
+      <li>(optional) 15 m RJ45 LAN-Kabel (lan to the tent)</li>
+    </ul>
+  </main>
+</Base>

@@ -1,7 +1,5 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Base from "../layouts/Base.astro";
 // The scroll-driven camera animation lives in its own file and is inlined ONLY
 // here (raw import → is:inline <style> below), so only the home page animates.
 // Astro merges all imported CSS into one shared bundle inlined on every page, so
@@ -14,95 +12,85 @@ const chromiumMajor = Number(ua.match(/Chrome\/(\d+)/)?.[1] ?? 0);
 const needsScrollPolyfillLoader = !(chromiumMajor > 145);
 ---
 
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>N50CAMP</title>
-    {
-      needsScrollPolyfillLoader && (
-        <script is:inline>
-          (() => {
-            // load the scroll-driven-animation polyfill only where the browser
-            // lacks native support (currently Firefox)
-            const hasNativeScrollTimeline =
-              globalThis.CSS?.supports?.("animation-timeline", "scroll()") === true;
-            if (hasNativeScrollTimeline) {
-              return;
-            }
+<Base>
+  {
+    needsScrollPolyfillLoader && (
+      <script is:inline slot="head">
+        (() => {
+          // load the scroll-driven-animation polyfill only where the browser
+          // lacks native support (currently Firefox)
+          const hasNativeScrollTimeline =
+            globalThis.CSS?.supports?.("animation-timeline", "scroll()") === true;
+          if (hasNativeScrollTimeline) {
+            return;
+          }
 
-            const script = document.createElement("script");
-            script.src = "/scroll-driven-animation-polyfill.js";
-            script.defer = true;
-            document.head.append(script);
-          })();
-        </script>
-      )
-    }
-    <style is:inline set:html={heroCss}></style>
-  </head>
-  <body>
-    <Header />
+          const script = document.createElement("script");
+          script.src = "/scroll-driven-animation-polyfill.js";
+          script.defer = true;
+          document.head.append(script);
+        })();
+      </script>
+    )
+  }
+  <style is:inline slot="head" set:html={heroCss}></style>
 
-    <main>
-      <p>
-        N50CAMP ist ein Outdoor-Hacker-Camp, das vom 10. bis 12. Juli 2026 auf
-        dem Pfadfinderplatz Greifenhorst (etwa 10 km westlich von Mainz)
-        stattfindet. N50CAMP ist die erste Camping-Veranstaltung von <a
-          href="//n50.lat">n50</a
-        >.
-      </p>
-      <p>
-        Du hast Lust einen Vortrag zu halten oder einen Workshop zu veranstalten?
-        Lass es uns unter <a href="mailto:camp@n50.lat">camp@n50.lat</a> wissen!
-      </p>
-      <nav aria-label="Seiten">
-        <ul>
-          <li><a href="/anreise">Anreise</a></li>
-          <li><a href="/versorgung">Versorgung</a></li>
-          <li><a href="/packliste">Packliste</a></li>
-        </ul>
-      </nav>
-      <p>
-        <time datetime="2026-07-10T15:00:00+02:00"
-          >10. Juli 2026, 15:00 Uhr</time
-        >
-        <br />
-        bis <br />
-        <time datetime="2026-07-12T18:00:00+02:00"
-          >12. Juli 2026, 18:00 Uhr</time
-        >
-        <br />
-        <a href="/n50-camp-2026.ics" download>Zum Kalender hinzufügen</a>
-      </p>
-      <address>
-        Pfadfinderplatz Greifenhorst<br />
-        St. Georgsweg 1<br />
-        55271 Stadecken-Elsheim<br />
-        Deutschland
-      </address>
+  <main>
+    <p>
+      N50CAMP ist ein Outdoor-Hacker-Camp, das vom 10. bis 12. Juli 2026 auf
+      dem Pfadfinderplatz Greifenhorst (etwa 10 km westlich von Mainz)
+      stattfindet. N50CAMP ist die erste Camping-Veranstaltung von <a
+        href="//n50.lat">n50</a
+      >.
+    </p>
+    <p>
+      Du hast Lust einen Vortrag zu halten oder einen Workshop zu veranstalten?
+      Lass es uns unter <a href="mailto:camp@n50.lat">camp@n50.lat</a> wissen!
+    </p>
+    <nav aria-label="Seiten">
       <ul>
-        <li>
-          <a
-            href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=;49.9100041,8.1212092"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Route planen ↗
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.google.com/maps/dir/?api=1&destination=49.9100041%2C8.1212092"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Route planen (Google Maps) ↗
-          </a>
-        </li>
+        <li><a href="/anreise">Anreise</a></li>
+        <li><a href="/versorgung">Versorgung</a></li>
+        <li><a href="/packliste">Packliste</a></li>
       </ul>
-    </main>
-    <Footer />
-  </body>
-</html>
+    </nav>
+    <p>
+      <time datetime="2026-07-10T15:00:00+02:00"
+        >10. Juli 2026, 15:00 Uhr</time
+      >
+      <br />
+      bis <br />
+      <time datetime="2026-07-12T18:00:00+02:00"
+        >12. Juli 2026, 18:00 Uhr</time
+      >
+      <br />
+      <a href="/n50-camp-2026.ics" download>Zum Kalender hinzufügen</a>
+    </p>
+    <address>
+      Pfadfinderplatz Greifenhorst<br />
+      St. Georgsweg 1<br />
+      55271 Stadecken-Elsheim<br />
+      Deutschland
+    </address>
+    <ul>
+      <li>
+        <a
+          href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=;49.9100041,8.1212092"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Route planen ↗
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://www.google.com/maps/dir/?api=1&destination=49.9100041%2C8.1212092"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Route planen (Google Maps) ↗
+        </a>
+      </li>
+    </ul>
+  </main>
+</Base>

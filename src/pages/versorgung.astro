@@ -1,39 +1,27 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Base from "../layouts/Base.astro";
 ---
 
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>N50CAMP</title>
-  </head>
-  <body>
-    <Header />
-    <main>
-      <a href="/">&lt; Home</a>
-      <h2>Versorgung</h2>
-      <p>
-        Bei dem Camp wird es ein ewiges Frühstück geben, welches für alle Camp-Teilnehmer kostenlos zugänglich ist.
-        Zudem gibt es Freitag eine warme Mahlzeit und Samstag wird abends gegrillt - beides natürlich mit dem Ticket bereits bezahlt.
-        Wir bieten grundsätzlich der Einfachheit halber vegetarisches Essen mit genug veganen Möglichkeiten an.
-        Unverträglichkeiten versuchen wir mit einzuberechnen. Falls ihr Fragen oder Wünsche bezüglich des Essens habt, schreibt
-        uns unter camp@n50.lat an oder sprecht uns einfach auf dem Camp an.
-      </p>
-      <h3>Getränke</h3>
-      <p>
-        Es wird heiß, also denkt daran, genug zu trinken! Leitungswasser gibt es dauerhaft kostenlos. Ansonsten bieten wir zu fairen Preisen noch andere Getränke über ein
-        Strichlistenprinzip an. Abends gibt es außerdem noch Tschunk.
-      </p>
-      <h3>Sonstiges</h3>
-      <p>
-        Mit ein paar Minuten Fußweg gibt es auch einen REWE mit Getränkemarkt neben dem Camp. Falls ihr Snacks haben wollt
-        oder etwas anderes, was wir nicht auf dem Camp bieten können, empfehlen wir, den Spaziergang dorthin zu machen.
-      </p>
-    </main>
-    <Footer />
-  </body>
-</html>
+<Base>
+  <main>
+    <a href="/">&lt; Home</a>
+    <h2>Versorgung</h2>
+    <p>
+      Bei dem Camp wird es ein ewiges Frühstück geben, welches für alle Camp-Teilnehmer kostenlos zugänglich ist.
+      Zudem gibt es Freitag eine warme Mahlzeit und Samstag wird abends gegrillt - beides natürlich mit dem Ticket bereits bezahlt.
+      Wir bieten grundsätzlich der Einfachheit halber vegetarisches Essen mit genug veganen Möglichkeiten an.
+      Unverträglichkeiten versuchen wir mit einzuberechnen. Falls ihr Fragen oder Wünsche bezüglich des Essens habt, schreibt
+      uns unter camp@n50.lat an oder sprecht uns einfach auf dem Camp an.
+    </p>
+    <h3>Getränke</h3>
+    <p>
+      Es wird heiß, also denkt daran, genug zu trinken! Leitungswasser gibt es dauerhaft kostenlos. Ansonsten bieten wir zu fairen Preisen noch andere Getränke über ein
+      Strichlistenprinzip an. Abends gibt es außerdem noch Tschunk.
+    </p>
+    <h3>Sonstiges</h3>
+    <p>
+      Mit ein paar Minuten Fußweg gibt es auch einen REWE mit Getränkemarkt neben dem Camp. Falls ihr Snacks haben wollt
+      oder etwas anderes, was wir nicht auf dem Camp bieten können, empfehlen wir, den Spaziergang dorthin zu machen.
+    </p>
+  </main>
+</Base>
